@@ -26,9 +26,16 @@ body {
     color: #b2b1b1;
     cursor: pointer;
 }
+.menu ul li a{
+    list-style:none;
+    margin:0 20px;
+    color: #b2b1b1;
+    cursor: pointer;
+    text-decoration: none;
+}
 
 .logo img {
-    width: 60px;
+    width: 140px;
     margin-top: -20px;
     margin-right: 40px;
 
