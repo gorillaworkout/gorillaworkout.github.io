@@ -1,0 +1,172 @@
+ body{
+     margin:0;
+     padding:0;
+     text-align:center;
+     font-family:sans-serif;
+     background-image: linear-gradient(120deg ,#0984e3,#55efc4);
+     min-height:100vh;
+
+ }
+
+ .class-bmi{
+     width: 500px;
+     position:absolute;
+     top:50%;
+     left:50%;
+     background-color:#fff;
+     transform: translate(-50%, -50%);
+     padding:20px;
+     border-radius:10px;
+     box-shadow:1px 1px 20px #ee5253
+ }
+
+ h2 {
+     font-size: 30px;
+     font-weight: 600px
+ }
+
+ .text {
+     text-align: left;
+     margin-left: 150px;
+ }
+
+ #weight, #height {
+     color: #222f3e;
+     text-align: left;
+     font-size:20px;
+     font-weight: 200;
+     outline:none; /*ngilangin  garis border outline */
+     border:none; /*ngilangin  garis border border */
+     background:none; /*ngilangin  background*/
+     border-bottom: 1px solid #0984e3; /*munculin garis bawah 1px */
+     width: 200px;
+ }
+
+ #weight:focus, #height:focus {
+     border-bottom:2px solid #0984e3; /*untuk ngebuat garis bawah lebih tebel pas di klik */
+     width:300px; /*untuk ngebuat garis bawah lebih tebel pas di klik trus nambah panjang */
+ }
+
+ #result {
+     color: #0984e3;
+ }
+
+ #btn {
+     font-family: inherit;
+     margin-top: 10px;
+     border:none;
+     color: #fff;
+     background-image: linear-gradient(120deg ,#0984e3,#55efc4);
+     width:150px;
+     padding:10px;
+     border-radius:30px;
+     outline: none;
+     cursor:pointer;
+     
+ }
+
+ #btn:hover{
+     box-shadow: 1px 1px 10px #0984e3; /* Ngasih efek shadow pas ada mouse */
+ }
+
+ #info {
+     font-size: 12px;
+     font-family: inherit; 
+ }
+
+
+
+ .menu ul {
+     display:inline-flex;
+     margin:50px;
+     margin-left: -500px;
+     width:auto;
+ }
+ .menu ul li {
+    list-style:none;
+    margin: 0 20px;
+    color:#ee5253;  
+    cursor: pointer;
+
+ }
+
+ .menu ul li a {
+     list-style:none;
+     margin: 0 20px;
+     color:#ee5253;
+     cursor:pointer;
+     text-decoration: none;
+ }
+
+ .logo img{
+     width: 100px;
+     margin-top:-30px;
+     margin-left:-100px;
+ }
+
+ .active {
+     color: #feca57 !important;
+ }
+
+ .signup-btn {
+     top:40px;
+     right:80px;
+     position:absolute;
+     text-decoration:none;
+     color: #fff;
+     border: 2px solid transparent;
+     border-radius: 20px;
+     background-image: linear-gradient(#19d7f8,#c8d6e5),
+     radial-gradient(circle at top left,#feca57,#feca57);
+     background-origin: border-box;
+     background-clip: content-box, border-box;
+ }
+
+ .signup-btn span {
+     display:block;
+     padding: 8px 22px;
+ }
+
+.quick-links {
+    left:0;
+    bottom:0;
+    position:absolute;
+    background-image: linear-gradient(#19d7f8,#c8d6e5);
+
+}
+
+.quick-links ul {
+    display: inline-flex;
+    margin: 10px auto;
+}
+
+.quick-links li {
+    list-style:none;
+    margin: 0 20px;
+    cursor: pointer
+}
+
+.quick-links ul li .fa {
+    font-size: 20px;
+    color: #fff;
+}
+
+.quick-links ul li p {
+    margin-top: 15px;
+    font-size:10px;
+    color: #fff;
+}
+
+.social-icons{
+    right: 72px;
+    bottom: 35px;
+    position:absolute;
+}
+
+.social-icons ul li a {
+    color: #999;
+    border-radius: 50%;
+    border: 1px solid #999;
+    padding: 5px;
+    display: block;
+}
