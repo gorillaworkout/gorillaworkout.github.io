@@ -121,13 +121,15 @@ body {
 }
 
 .app-cal {
-    border: 5px solid rgb(235, 212, 5);
-    width: 450px;
-    height: 250px;
+    /* border: 5px solid rgb(235, 212, 5); */
+    width: 550px;
+    height: 300px;
     border-radius: 4px;
     text-align: center;
+    background-color: #95afc0
     
 }
+
 
 #output-cal {
     font-size: 40px;
@@ -144,10 +146,24 @@ body {
     width: 50%;
 
 }
-#number1, #number2 {
-    background-color: blanchedalmond;
+#function {
+    font-size: 15px;
 }
-
+#number1, #number2 {
+    background-color: #95afc0;
+    text-align:left;
+    font-size:20px;
+    font-weight:200;
+    outline:none;
+    border:none;
+    background:none;
+    border-bottom: 1px solid #0984e3;
+    width:200px;
+}
+#number1:focus, #number2:focus {
+    border-bottom: 2px solid #0984e3;
+    width:300px;
+}
 
 .app-picture img{
     width:80%;
@@ -221,6 +237,7 @@ cursor: pointer;
     right: 72px;
     bottom: 35px;
     position:absolute;
+    
 }
 
 .social-icons ul li {
