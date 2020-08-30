@@ -204,7 +204,7 @@ small {
 
 .quick-links {
     left: 0;
-    bottom:0;
+    bottom:-50px;
     position:absolute;
     background:linear-gradient(to right, #db1bf6,#19d7f8 )
 }
