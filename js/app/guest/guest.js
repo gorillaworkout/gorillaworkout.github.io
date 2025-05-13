@@ -302,7 +302,7 @@ export const guest = (() => {
         document.getElementById('button-modal-download').addEventListener('click', (e) => {
             img.download(e.currentTarget.getAttribute('data-src'));
         });
-
+            aud.load();
         if (!token || token.length <= 0) {
             img.load();
             aud.load();
