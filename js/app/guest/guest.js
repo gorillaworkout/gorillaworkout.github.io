@@ -13,19 +13,9 @@ import * as confetti from '../../libs/confetti.js';
 
 export const guest = (() => {
 
-    /**
-     * @type {ReturnType<typeof storage>|null}
-     */
     let information = null;
-
-    /**
-     * @type {ReturnType<typeof storage>|null}
-     */
     let config = null;
 
-    /**
-     * @returns {void}
-     */
     const countDownDate = () => {
         const count = (new Date(document.body.getAttribute('data-time').replace(' ', 'T'))).getTime();
 
@@ -43,14 +33,7 @@ export const guest = (() => {
         requestAnimationFrame(updateCountdown);
     };
 
-    /**
-     * @returns {void}
-     */
     const showGuestName = () => {
-        /**
-         * Make sure "to=" is the last query string.
-         * Ex. ulems.my.id/?id=some-uuid-here&to=name
-         */
         const raw = window.location.search.split('to=');
         let name = null;
 
@@ -75,9 +58,6 @@ export const guest = (() => {
         }
     };
 
-    /**
-     * @returns {Promise<void>}
-     */
     const slide = async () => {
         let index = 0;
         let lastTime = 0;
@@ -123,31 +103,35 @@ export const guest = (() => {
         util.timeOut(loop, interval);
     };
 
-    /**
-     * @param {HTMLButtonElement} button
-     * @returns {void}
-     */
-    const open = (button) => {
-        button.disabled = true;
-        document.body.scrollIntoView({ behavior: 'instant' });
-        document.dispatchEvent(new Event('undangan.open'));
+   const open = (button) => {
+    button.disabled = true;
+    document.body.scrollIntoView({ behavior: 'instant' });
+    document.dispatchEvent(new Event('undangan.open'));
 
-        if (theme.isAutoMode()) {
-            document.getElementById('button-theme').classList.remove('d-none');
+    if (theme.isAutoMode()) {
+        document.getElementById('button-theme').classList.remove('d-none');
+    }
+
+    slide();
+    theme.spyTop();
+
+    confetti.basicAnimation();
+    util.timeOut(confetti.openAnimation, 1500);
+    util.changeOpacity(document.getElementById('welcome'), false).then((el) => el.remove());
+
+    // Ensure audio plays after user interaction
+    util.timeOut(() => {
+        try {
+            const player = document.getElementById('audio-player');
+            if (player && player.paused) {
+                player.play().catch(() => {});
+            }
+        } catch (err) {
+            console.warn("Audio play failed:", err);
         }
+    }, 300);
+};
 
-        slide();
-        theme.spyTop();
-
-        confetti.basicAnimation();
-        util.timeOut(confetti.openAnimation, 1500);
-        util.changeOpacity(document.getElementById('welcome'), false).then((el) => el.remove());
-    };
-
-    /**
-     * @param {HTMLImageElement} img
-     * @returns {void}
-     */
     const modal = (img) => {
         document.getElementById('button-modal-click').setAttribute('href', img.src);
         document.getElementById('button-modal-download').setAttribute('data-src', img.src);
@@ -160,46 +144,26 @@ export const guest = (() => {
         bs.modal('modal-image').show();
     };
 
-    /**
-     * @param {HTMLDivElement} div 
-     * @returns {void}
-     */
     const showStory = (div) => {
         confetti.tapTapAnimation(div, 100);
         util.changeOpacity(div, false).then((e) => e.remove());
     };
 
-    /**
-     * @returns {void}
-     */
     const closeInformation = () => information.set('info', true);
 
-    /**
-     * @returns {void}
-     */
     const normalizeArabicFont = () => {
         document.querySelectorAll('.font-arabic').forEach((el) => {
             el.innerHTML = String(el.innerHTML).normalize('NFC');
         });
     };
 
-    /**
-     * @returns {void}
-     */
     const animateSvg = () => {
         document.querySelectorAll('svg').forEach((el) => {
             util.timeOut(() => el.classList.add(el.getAttribute('data-class')), parseInt(el.getAttribute('data-time')));
         });
     };
 
-    /**
-     * @returns {void}
-     */
     const buildGoogleCalendar = () => {
-        /**
-         * @param {string} d 
-         * @returns {string}
-         */
         const formatDate = (d) => (new Date(d + ':00Z')).toISOString().replace(/[-:]/g, '').split('.').shift();
 
         const url = new URL('https://calendar.google.com/calendar/render');
@@ -216,16 +180,9 @@ export const guest = (() => {
         document.querySelector('#home button')?.addEventListener('click', () => window.open(url, '_blank'));
     };
 
-    /**
-     * @returns {object}
-     */
     const loaderConfetti = () => {
         progress.add();
 
-        /**
-         * @param {boolean} isLoad 
-         * @returns {void}
-         */
         const load = (isLoad) => {
             if (!isLoad) {
                 progress.complete('confetti', true);
@@ -242,9 +199,6 @@ export const guest = (() => {
         };
     };
 
-    /**
-     * @returns {Promise<void>}
-     */
     const booting = async () => {
         animateSvg();
         countDownDate();
@@ -273,16 +227,11 @@ export const guest = (() => {
         window.AOS.init();
         document.body.scrollIntoView({ behavior: 'instant' });
 
-        // wait until welcome screen is show.
         await util.changeOpacity(document.getElementById('welcome'), true);
 
-        // remove loading screen and show welcome screen.
         await util.changeOpacity(document.getElementById('loading'), false).then((el) => el.remove());
     };
 
-    /**
-     * @returns {void}
-     */
     const domLoaded = () => {
         lang.init();
         offline.init();
@@ -292,7 +241,7 @@ export const guest = (() => {
         information = storage('information');
 
         const img = image.init();
-        const aud = audio.init();
+        const aud = audio.init(); // initialized, but DO NOT call aud.load() yet
         const cfi = loaderConfetti();
         const token = document.body.getAttribute('data-key');
         const params = new URLSearchParams(window.location.search);
@@ -302,10 +251,19 @@ export const guest = (() => {
         document.getElementById('button-modal-download').addEventListener('click', (e) => {
             img.download(e.currentTarget.getAttribute('data-src'));
         });
-            aud.load();
+
+        // Function to load audio after user interaction
+        const setupAudioAfterInteraction = () => {
+            aud.load(); // iOS Safari now allows it
+            document.removeEventListener('click', setupAudioAfterInteraction);
+            document.removeEventListener('touchstart', setupAudioAfterInteraction);
+        };
+
+        document.addEventListener('click', setupAudioAfterInteraction, { once: true });
+        document.addEventListener('touchstart', setupAudioAfterInteraction, { once: true });
+
         if (!token || token.length <= 0) {
             img.load();
-            aud.load();
             cfi.load(document.body.getAttribute('data-confetti') === 'true');
 
             document.getElementById('comment')?.remove();
@@ -313,41 +271,31 @@ export const guest = (() => {
         }
 
         if (token && token.length > 0) {
-            // add 2 progress for config and comment.
-            // before img.load();
-            progress.add();
-            progress.add();
+            progress.add(); // config
+            progress.add(); // comment
 
-            // if don't have data-src.
             if (!img.hasDataSrc()) {
                 img.load();
             }
 
-            // fetch after document is loaded.
             const loader = () => session.guest(params.get('k') ?? token).then(({ data }) => {
                 progress.complete('config');
-
                 if (img.hasDataSrc()) {
                     img.load();
                 }
 
-                aud.load();
                 comment.init();
                 cfi.load(data.is_confetti_animation);
 
                 comment.show()
                     .then(() => progress.complete('comment'))
                     .catch(() => progress.invalid('comment'));
-
             }).catch(() => progress.invalid('config'));
 
             window.addEventListener('load', loader);
         }
     };
 
-    /**
-     * @returns {object}
-     */
     const init = () => {
         theme.init();
         session.init();
