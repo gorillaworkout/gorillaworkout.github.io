@@ -2,89 +2,97 @@ import { progress } from './progress.js';
 import { cache } from '../../connection/cache.js';
 
 export const audio = (() => {
+
     const statePlay = '<i class="fa-solid fa-circle-pause spin-button"></i>';
     const statePause = '<i class="fa-solid fa-circle-play"></i>';
 
-    /** @type {HTMLAudioElement|null} */
-    let audioEl = null;
-    let isPlay = false;
-    let url = null;
-    let music = null;
+    /**
+     * @returns {Promise<void>}
+     */
+    const load = async () => {
+        const url = document.body.getAttribute('data-audio');
 
-    const handleUserClick = async () => {
-        console.log('[audio] Button clicked');
-        if (!music) {
-            console.warn('[audio] music button not found!');
+        if (!url) {
+            progress.complete('audio', true);
             return;
         }
 
-        music.disabled = true;
+        /**
+         * @type {HTMLAudioElement|null}
+         */
+        let audioEl = null;
 
         try {
-            if (!audioEl) {
-                console.log('[audio] Creating new audio element');
-                audioEl = new Audio();
-                audioEl.loop = true;
-                audioEl.volume = 1;
+            const cancel = new Promise((res) => document.addEventListener('progress.invalid', res, { once: true }));
 
-                url = document.body.getAttribute('data-audio');
-                console.log('[audio] data-audio URL:', url);
-                if (!url) {
-                    progress.complete('audio', true);
-                    return;
-                }
+            audioEl = new Audio(await cache('audio').get(url, cancel));
+            audioEl.volume = 1;
+            audioEl.loop = true;
+            audioEl.muted = false;
+            audioEl.currentTime = 0;
+            audioEl.autoplay = false;
+            audioEl.controls = false;
 
-                const cancel = new Promise((res) =>
-                    document.addEventListener('progress.invalid', res, { once: true })
-                );
-
-                const audioSrc = await cache('audio').get(url, cancel);
-                console.log('[audio] Loaded audioSrc:', audioSrc);
-
-                audioEl.src = audioSrc;
-
-                await new Promise((res) =>
-                    audioEl.addEventListener('canplaythrough', res, { once: true })
-                );
-
-                console.log('[audio] Audio ready to play');
-                progress.complete('audio');
-            }
-
-            if (isPlay) {
-                audioEl.pause();
-                music.innerHTML = statePause;
-                isPlay = false;
-            } else {
-                await audioEl.play();
-                music.innerHTML = statePlay;
-                isPlay = true;
-            }
-        } catch (err) {
-            alert('Audio error: ' + err.message);
-            console.error('[audio] Error:', err);
+            await new Promise((res) => audioEl.addEventListener('canplay', res, { once: true }));
+            progress.complete('audio');
+        } catch {
             progress.invalid('audio');
-        } finally {
-            music.disabled = false;
-        }
-    };
-
-    const setup = () => {
-        console.log('[audio] setup() called');
-        music = document.getElementById('button-music');
-        if (!music) {
-            console.warn('[audio] Button with ID "button-music" not found!');
             return;
         }
 
-        music.classList.remove('d-none');
-        music.disabled = false;
-        music.addEventListener('click', handleUserClick, { once: true });
+        let isPlay = false;
+        const music = document.getElementById('button-music');
 
-        console.log('[audio] Music button initialized and visible');
+        /**
+         * @returns {Promise<void>}
+         */
+        const play = async () => {
+            if (!navigator.onLine || !music) {
+                return;
+            }
+
+            music.disabled = true;
+            try {
+                await audioEl.play();
+                isPlay = true;
+                music.disabled = false;
+                music.innerHTML = statePlay;
+            } catch (err) {
+                isPlay = false;
+                alert(err);
+            }
+        };
+
+        /**
+         * @returns {void}
+         */
+        const pause = () => {
+            isPlay = false;
+            audioEl.pause();
+            music.innerHTML = statePause;
+        };
+
+        document.addEventListener('undangan.open', () => {
+            play();
+            music.classList.remove('d-none');
+        });
+
+        music.addEventListener('offline', pause);
+        music.addEventListener('click', () => isPlay ? pause() : play());
+    };
+
+    /**
+     * @returns {object}
+     */
+    const init = () => {
+        progress.add();
+
+        return {
+            load,
+        };
     };
 
     return {
-        init: setup,
+        init,
     };
 })();
